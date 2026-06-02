@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moorea · Litiges</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root{--gold:#c8a84b;--gold-border:rgba(200,168,75,0.27);--dark:#0a0a0a;--cream:#f5f3ee;--white:#fff;--gray:#6b7280;--gray-light:#e8e0d0;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);background:var(--cream);min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:var(--dark);padding:0 2rem;height:62px;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid var(--gold-border)}
+.topbar-logo .name{font-size:15px;font-weight:700;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase}
+.topbar-logo .sub{font-size:11px;color:rgba(255,255,255,.4)}
+.sync-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:6px 14px;font-size:12px;color:rgba(255,255,255,.7)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#555;flex-shrink:0}
+.sync-dot.ok{background:#22c55e}.sync-dot.loading{background:var(--gold);animation:pulse 1s infinite}.sync-dot.error{background:#ef4444}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* NAV */
+.nav-wrap{background:var(--dark);border-bottom:1.5px solid var(--gold-border);padding:0 2rem}
+.nav{display:flex;max-width:1100px;margin:0 auto;overflow-x:auto}
+.nav-btn{padding:14px 18px;background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;color:rgba(255,255,255,.65);transition:all .15s;display:flex;align-items:center;gap:7px;white-space:nowrap;margin-bottom:-1.5px}
+.nav-btn:hover{color:#fff}.nav-btn.active{color:#fff;border-bottom-color:var(--gold)}
+
+.app{max-width:1100px;margin:0 auto;padding:1.5rem 1rem 3rem}
+.page{display:none}.page.active{display:block}
+
+/* CARDS & FORMS */
+.card{background:var(--white);border:1.5px solid var(--gray-light);border-radius:16px;padding:1.25rem;margin-bottom:1rem}
+.section-title{font-size:13px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';display:block;width:3px;height:16px;background:var(--gold);border-radius:2px}
+.section-header{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin:1.25rem 0 .75rem;padding-bottom:8px;border-bottom:1px solid var(--gray-light)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.form-row-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:600px){.form-row,.form-row-3,.form-row-4{grid-template-columns:1fr}}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
+.form-group label{font-size:11px;color:var(--gray);font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.form-group input,.form-group select,.form-group textarea{padding:10px 13px;border:1.5px solid var(--gray-light);border-radius:10px;background:var(--white);color:var(--dark);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:rgba(200,168,75,.6)}
+.form-group textarea{resize:vertical;min-height:60px}
+
+/* COST INPUTS */
+.cost-input{display:flex;align-items:center;gap:5px}
+.cost-input span{font-size:13px;color:var(--gray);flex-shrink:0}
+.cost-input input{flex:1;padding:10px 10px;border:1.5px solid var(--gray-light);border-radius:10px;background:var(--white);color:var(--dark);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;text-align:right}
+.cost-input input:focus{border-color:rgba(200,168,75,.6)}
+.cost-total{background:#fffbf0;border:1.5px solid rgba(200,168,75,.35);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
+.cost-total-label{font-size:12px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.4px}
+.cost-total-val{font-size:22px;font-weight:700;color:var(--gold)}
+
+/* BUTTONS */
+.btn-primary{padding:11px 24px;background:var(--gold);color:var(--dark);border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:7px;transition:all .15s}
+.btn-primary:hover{background:#d4a93a}.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{padding:11px 22px;background:transparent;color:var(--dark);border:1.5px solid var(--gray-light);border-radius:10px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif}
+.btn-secondary:hover{background:#f5f3ee}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:1.25rem;flex-wrap:wrap}
+.separator{height:1.5px;background:var(--gray-light);margin:1.25rem 0}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-ouvert{background:#fef3c7;color:#b45309;border:1px solid #fde68a}
+.badge-encours{background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe}
+.badge-clos{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0}
+.badge-lie{background:#f3e8ff;color:#7c3aed;border:1px solid #e9d5ff}
+
+/* LITIGE CARD */
+.litige-card{background:var(--white);border:1.5px solid var(--gray-light);border-radius:14px;padding:1rem 1.25rem;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.litige-card:hover{border-color:rgba(200,168,75,.5);box-shadow:0 3px 12px rgba(200,168,75,.08)}
+.litige-card.has-retour{border-left:3px solid #7c3aed}
+.litige-meta{display:flex;gap:14px;font-size:12px;color:var(--gray);flex-wrap:wrap;margin-top:5px}
+.num-litige{font-size:11px;font-weight:700;color:var(--gold);background:rgba(200,168,75,.12);border:1px solid var(--gold-border);border-radius:6px;padding:2px 8px;letter-spacing:.5px}
+.detail-panel{display:none}.detail-panel.open{display:block}
+
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:1.5rem}
+@media(max-width:700px){.stat-grid{grid-template-columns:1fr 1fr}}
+.stat-card{background:var(--white);border:1.5px solid var(--gray-light);border-radius:14px;padding:1rem;text-align:center}
+.stat-card .num{font-size:22px;font-weight:700}.stat-card .lbl{font-size:11px;color:var(--gray);margin-top:2px;text-transform:uppercase;letter-spacing:.3px}
+.stat-card.warn{border-color:rgba(200,168,75,.4);background:#fffbf0}.stat-card.warn .num{color:var(--gold)}
+.stat-card.red{border-color:#fecaca;background:#fff5f5}.stat-card.red .num{color:#dc2626}
+
+/* FILTER */
+.filter-bar{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center}
+.filter-btn{padding:7px 14px;border:1.5px solid var(--gray-light);border-radius:20px;background:transparent;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--gray);transition:all .15s}
+.filter-btn:hover{border-color:rgba(200,168,75,.4);color:var(--gold)}
+.filter-btn.active{background:var(--dark);color:#fff;border-color:var(--dark)}
+.search-input{padding:7px 14px;border:1.5px solid var(--gray-light);border-radius:20px;background:var(--white);color:var(--dark);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;min-width:200px}
+.search-input:focus{border-color:rgba(200,168,75,.4)}
+
+.empty-state{text-align:center;padding:3rem 1rem;color:#bbb}
+.ac-filtre-list{position:absolute;top:100%;left:0;right:0;background:var(--white);border:1.5px solid rgba(200,168,75,.4);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:300;max-height:160px;overflow-y:auto;margin-top:3px}
+.ac-filtre-item{padding:9px 14px;cursor:pointer;font-size:13px;border-bottom:.5px solid var(--gray-light)}
+.ac-filtre-item:hover{background:var(--cream)}
+.empty-state i{font-size:40px;display:block;margin-bottom:12px;opacity:.3}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:var(--gold);padding:13px 22px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.3);border:1px solid var(--gold-border)}
+.toast.show{opacity:1}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:var(--white);border-radius:20px;padding:2rem;max-width:580px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:1.5rem;flex-wrap:wrap}
+.retour-option{padding:10px 14px;background:var(--cream);border:1.5px solid var(--gray-light);border-radius:10px;cursor:pointer;margin-bottom:6px;transition:all .15s;display:flex;align-items:center;justify-content:space-between}
+.retour-option:hover{border-color:var(--gold);background:#fffbf0}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="name">🌿 Moorea · Litiges</div>
+    <div class="sub">Suivi des litiges clients</div>
+  </div>
+  <div class="sync-pill">
+    <span class="sync-dot loading" id="sync-dot"></span>
+    <span id="sync-label">Connexion...</span>
+  </div>
+</div>
+
+<div class="nav-wrap">
+  <div class="nav">
+    <button class="nav-btn active" id="btn-litiges" onclick="showPage('litiges')"><i class="ti ti-list-details"></i> Litiges</button>
+    <button class="nav-btn" id="btn-nouveau" onclick="showPage('nouveau')"><i class="ti ti-plus"></i> Nouveau litige</button>
+    <button class="nav-btn" id="btn-stats" onclick="showPage('stats')"><i class="ti ti-chart-bar"></i> Statistiques</button>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- PAGE LITIGES -->
+  <div class="page active" id="page-litiges">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px">
+      <div class="section-title" style="margin:0">Tous les litiges</div>
+      <button class="btn-primary" onclick="showPage('nouveau')"><i class="ti ti-plus"></i> Nouveau litige</button>
+    </div>
+    <!-- Barre de recherche principale -->
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
+      <input type="text" class="search-input" id="search-input" placeholder="🔍 Client, produit, BL, préparateur..." oninput="renderLitiges()" style="flex:1;min-width:220px">
+      <button onclick="toggleFiltresAvances()" id="btn-filtres-avances" style="padding:8px 16px;background:var(--white);border:1.5px solid var(--gray-light);border-radius:20px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--gray);display:flex;align-items:center;gap:6px;transition:.15s" onmouseover="this.style.borderColor='rgba(200,168,75,.5)'" onmouseout="this.style.borderColor='var(--gray-light)'">
+        <i class="ti ti-adjustments-horizontal"></i> Filtres <span id="filtres-count-badge" style="display:none;background:#c8a84b;color:#000;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:700">0</span>
+      </button>
+      <button onclick="resetFiltres()" id="btn-reset-filtres" style="display:none;padding:8px 14px;background:#fee2e2;color:#dc2626;border:1.5px solid #fecaca;border-radius:20px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500">
+        <i class="ti ti-x"></i> Effacer
+      </button>
+    </div>
+
+    <!-- Filtres avancés (masqués par défaut) -->
+    <div id="filtres-avances" style="display:none;background:var(--white);border:1.5px solid var(--gray-light);border-radius:14px;padding:1.25rem;margin-bottom:1rem">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:12px">
+
+        <!-- Statut -->
+        <div class="form-group" style="margin:0">
+          <label>Statut</label>
+          <select id="f-statut" onchange="renderLitiges()" style="padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:10px;background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;outline:none">
+            <option value="">Tous</option>
+            <option value="ouvert">Ouvert</option>
+            <option value="en_cours">En cours</option>
+            <option value="clos">Clôturé</option>
+          </select>
+        </div>
+
+        <!-- Type NC -->
+        <div class="form-group" style="margin:0">
+          <label>Type non-conformité</label>
+          <select id="f-type" onchange="renderLitiges()" style="padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:10px;background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;outline:none">
+            <option value="">Tous</option>
+            <option>QUALITE</option>
+            <option>PREPARATION</option>
+            <option>MANQUANT</option>
+            <option>FOURNISSEUR</option>
+            <option>TRANSPORT</option>
+            <option>COLIS ABIME</option>
+            <option>MAUVAIS ARTICLE</option>
+          </select>
+        </div>
+
+        <!-- Préparateur -->
+        <div class="form-group" style="margin:0">
+          <label>Préparateur</label>
+          <div style="position:relative">
+            <input type="text" id="f-preparateur" placeholder="Nom préparateur" oninput="acFiltre('f-preparateur','ac-f-prep','preparateur');renderLitiges()" autocomplete="off" style="padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:10px;background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:100%">
+            <div id="ac-f-prep" class="ac-filtre-list" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- Transport -->
+        <div class="form-group" style="margin:0">
+          <label>Transporteur</label>
+          <div style="position:relative">
+            <input type="text" id="f-transport" placeholder="Transporteur" oninput="acFiltre('f-transport','ac-f-trans','transport');renderLitiges()" autocomplete="off" style="padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:10px;background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:100%">
+            <div id="ac-f-trans" class="ac-filtre-list" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- Date début -->
+        <div class="form-group" style="margin:0">
+          <label>📅 Date début</label>
+          <input type="date" id="f-date-debut" onchange="renderLitiges()" style="padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:10px;background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:100%">
+        </div>
+
+        <!-- Date fin -->
+        <div class="form-group" style="margin:0">
+          <label>📅 Date fin</label>
+          <input type="date" id="f-date-fin" onchange="renderLitiges()" style="padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:10px;background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:100%">
+        </div>
+
+        <!-- Mois rapide -->
+        <div class="form-group" style="margin:0">
+          <label>Mois rapide</label>
+          <select id="f-mois" onchange="selectionnerMois(this.value)" style="padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:10px;background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;outline:none">
+            <option value="">-- Choisir --</option>
+            <option value="2025-12">Décembre 2025</option>
+            <option value="2026-01">Janvier 2026</option>
+            <option value="2026-02">Février 2026</option>
+            <option value="2026-03">Mars 2026</option>
+            <option value="2026-04">Avril 2026</option>
+            <option value="2026-05">Mai 2026</option>
+            <option value="2026-06">Juin 2026</option>
+          </select>
+        </div>
+
+        <!-- Coût minimum -->
+        <div class="form-group" style="margin:0">
+          <label>Coût minimum (€)</label>
+          <input type="number" id="f-cout-min" placeholder="0" min="0" oninput="renderLitiges()" style="padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:10px;background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:100%">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Résumé résultats -->
+    <div id="resultats-resume" style="display:none;font-size:12px;color:var(--gray);margin-bottom:.75rem;padding:8px 14px;background:var(--cream);border-radius:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+      <span id="resultats-texte"></span>
+      <span id="resultats-cout" style="font-weight:700;color:#dc2626"></span>
+    </div>
+
+    <div id="litiges-list"></div>
+  </div>
+
+  <!-- PAGE NOUVEAU LITIGE -->
+  <div class="page" id="page-nouveau">
+    <div class="section-title">Nouveau litige</div>
+    <div class="card">
+      <div class="section-header"><i class="ti ti-info-circle"></i> Informations générales</div>
+      <div class="form-row">
+        <div class="form-group"><label>Date du litige</label><input type="date" id="n-date"></div>
+        <div class="form-group"><label>Client</label>
+          <div style="position:relative">
+            <input type="text" id="n-client" placeholder="Nom du client" oninput="acNClient(this)" autocomplete="off">
+            <div id="ac-n-client" style="position:absolute;top:100%;left:0;right:0;background:var(--white);border:1.5px solid rgba(200,168,75,.4);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:200;max-height:180px;overflow-y:auto;margin-top:3px;display:none"></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>N° BL</label><input type="number" id="n-bl" placeholder="ex : 2026054670" min="0"></div>
+        <div class="form-group"><label>Transporteur</label><input type="text" id="n-transport" placeholder="ex : Mesguen"></div>
+      </div>
+
+      <div class="section-header"><i class="ti ti-box"></i> Produit</div>
+      <div class="form-row">
+        <div class="form-group"><label>Produit</label><input type="text" id="n-produit" placeholder="Nom du produit"></div>
+        <div class="form-group"><label>Quantité</label><input type="text" id="n-qte" placeholder="ex : 12 colis"></div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group"><label>Fournisseur</label><input type="text" id="n-fournisseur" placeholder="Fournisseur"></div>
+        <div class="form-group"><label>N° Lot</label><input type="text" id="n-lot" placeholder="N° de lot"></div>
+        <div class="form-group"><label>Origine</label><input type="text" id="n-origine" placeholder="ex : Espagne"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Type de non-conformité</label>
+          <select id="n-type">
+            <option value="">-- Sélectionner --</option>
+            <option>QUALITE</option>
+            <option>MANQUANT</option>
+            <option>ERREUR PREPARATION</option>
+            <option>COLIS ABIME</option>
+            <option>MAUVAIS ARTICLE</option>
+            <option>AUTRE</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Détails / Motif</label><input type="text" id="n-details" placeholder="ex : Moisissure, pourriture..."></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nom préparateur</label><input type="text" id="n-preparateur" placeholder="Prénom"></div>
+        <div class="form-group"><label>Contrôle qualité</label><input type="text" id="n-controle" placeholder="Initiales"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Retour Moorea</label>
+          <select id="n-retour-moorea">
+            <option value="">--</option>
+            <option>OUI</option><option>NON</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Remise en stock</label>
+          <select id="n-remise-stock">
+            <option value="">--</option>
+            <option>OUI</option><option>NON</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-header"><i class="ti ti-link"></i> Lien avec une fiche retour</div>
+      <div id="retour-link-zone">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:13px;color:var(--gray)">Lier à une fiche retour existante ?</span>
+          <button type="button" class="btn-secondary" style="padding:7px 14px;font-size:12px" onclick="ouvrirLienRetour()"><i class="ti ti-search"></i> Chercher une fiche</button>
+        </div>
+        <div id="retour-lie-display" style="display:none;margin-top:10px;padding:10px 14px;background:#f3e8ff;border:1.5px solid #e9d5ff;border-radius:10px;font-size:13px;display:none;align-items:center;justify-content:space-between">
+          <span id="retour-lie-label"></span>
+          <button onclick="delierRetour()" style="background:none;border:none;cursor:pointer;color:#7c3aed;font-size:12px">✕ Délier</button>
+        </div>
+      </div>
+
+      <div class="separator"></div>
+      <div class="form-group"><label>Commentaire</label><textarea id="n-commentaire" placeholder="Informations complémentaires..."></textarea></div>
+    </div>
+
+    <div class="card">
+      <div class="section-header"><i class="ti ti-currency-euro"></i> Coûts du litige</div>
+      <div class="form-row-3">
+        <div class="form-group"><label>Perte marchandise (coût achat)</label>
+          <div class="cost-input"><span>€</span><input type="number" id="c-achat" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div>
+        </div>
+        <div class="form-group"><label>Perte vente</label>
+          <div class="cost-input"><span>€</span><input type="number" id="c-vente" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div>
+        </div>
+        <div class="form-group"><label>Retour transport</label>
+          <div class="cost-input"><span>€</span><input type="number" id="c-transport" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div>
+        </div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group"><label>Dépannage</label>
+          <div class="cost-input"><span>€</span><input type="number" id="c-depannage" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div>
+        </div>
+        <div class="form-group"><label>Conditionnement</label>
+          <div class="cost-input"><span>€</span><input type="number" id="c-conditionnement" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div>
+        </div>
+        <div class="form-group"><label>Avoir fournisseur</label>
+          <div class="cost-input"><span>€</span><input type="number" id="c-avoir" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div>
+        </div>
+      </div>
+      <div class="cost-total">
+        <span class="cost-total-label">Coût total du litige</span>
+        <span class="cost-total-val" id="cout-total">0,00 €</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="resetForm()">Réinitialiser</button>
+      <button class="btn-primary" id="btn-save-litige" onclick="sauvegarderLitige()"><i class="ti ti-device-floppy"></i> Enregistrer le litige</button>
+    </div>
+  </div>
+
+  <!-- PAGE STATS -->
+  <div class="page" id="page-stats">
+    <div class="section-title">Statistiques</div>
+    <div class="stat-grid" id="stats-grid"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem" id="stats-charts"></div>
+    <div class="card">
+      <div class="section-header"><i class="ti ti-list"></i> Top clients par coût total</div>
+      <div id="stats-clients"></div>
+    </div>
+    <div class="card">
+      <div class="section-header"><i class="ti ti-calendar-month"></i> Coûts par mois</div>
+      <div id="stats-mois"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL LIER RETOUR -->
+<div class="modal-bg" id="modal-retour">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-link" style="color:var(--gold)"></i> Lier à une fiche retour</div>
+    <input type="text" id="search-retour" placeholder="🔍 Chercher par client, BL, numéro..." style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-light);border-radius:10px;font-size:13px;margin-bottom:1rem;outline:none;font-family:'DM Sans',sans-serif" oninput="filtrerRetourModal()">
+    <div id="retours-modal-list" style="max-height:300px;overflow-y:auto"></div>
+    <div class="modal-actions"><button class="btn-secondary" onclick="fermerModalRetour()">Annuler</button></div>
+  </div>
+</div>
+
+<!-- MODAL DETAIL LITIGE -->
+<div class="modal-bg" id="modal-detail">
+  <div class="modal" style="max-width:640px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div class="modal-title" style="margin:0"><i class="ti ti-list-details" style="color:var(--gold)"></i> Détail du litige</div>
+      <div style="display:flex;gap:8px">
+        <button id="btn-modifier-statut" onclick="changerStatut()" style="padding:7px 14px;background:var(--gold);color:var(--dark);border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif"><i class="ti ti-check"></i> Changer statut</button>
+        <button onclick="modifierLitige()" style="padding:7px 12px;background:rgba(200,168,75,.1);color:var(--gold);border:1.5px solid rgba(200,168,75,.4);border-radius:8px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif"><i class="ti ti-edit"></i></button>
+      </div>
+    </div>
+    <div id="modal-detail-content"></div>
+    <div class="modal-actions"><button class="btn-secondary" onclick="fermerDetail()">Fermer</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, push, onValue, update, remove, get } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const cfg = {
+  apiKey:"AIzaSyAR0BdIsWrA7UDKfCFSANbqxDrIsqLq6BA",
+  authDomain:"moorea-retours.firebaseapp.com",
+  databaseURL:"https://moorea-retours-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"moorea-retours",
+  storageBucket:"moorea-retours.firebasestorage.app",
+  messagingSenderId:"57607281213",
+  appId:"1:57607281213:web:f00e57e7d8cb7166c9a854"
+};
+
+const app = initializeApp(cfg, 'litiges-app');
+const db = getDatabase(app);
+window._db = db; window._ref = ref; window._push = push; window._update = update; window._remove = remove; window._get = get;
+
+setSyncStatus('loading','Connexion...');
+
+// Écoute litiges
+onValue(ref(db,'litiges'), snap => {
+  const d = snap.val();
+  window.litiges = d ? Object.entries(d).map(([id,v])=>({...v,firebaseId:id})).sort((a,b)=>(b.ts||0)-(a.ts||0)) : [];
+  buildHistoClients();
+  const ap = document.querySelector('.page.active');
+  if(ap?.id==='page-litiges') renderLitiges();
+  if(ap?.id==='page-stats') renderStats();
+  setSyncStatus('ok', window.litiges.length+' litige'+(window.litiges.length!==1?'s':'')+' · Temps réel');
+}, err => { setSyncStatus('error','Erreur'); });
+
+// Écoute fiches retour de moorea-retours pour le lien
+onValue(ref(db,'retours'), snap => {
+  const d = snap.val();
+  window.retoursMoorea = d ? Object.entries(d).map(([id,v])=>({...v,firebaseId:id})).sort((a,b)=>(b.ts||0)-(a.ts||0)) : [];
+});
+
+function setSyncStatus(s,l){ document.getElementById('sync-dot').className='sync-dot '+s; document.getElementById('sync-label').textContent=l; }
+window.setSyncStatus = setSyncStatus;
+</script>
+
+<script>
+window.litiges = [];
+window.retoursMoorea = [];
+window._currentFilter = 'all';
+window._retourLie = null;
+window._editId = null;
+
+function buildHistoClients(){
+  const clients = new Set();
+  window.litiges.forEach(l => { if(l.client) clients.add(l.client); });
+  window._histoClients = [...clients].sort();
+}
+
+// ---- NAV ----
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('btn-'+id).classList.add('active');
+  if(id==='litiges') renderLitiges();
+  if(id==='stats') renderStats();
+  if(id==='nouveau'){ window._editId=null; resetForm(); }
+}
+
+// ---- AUTOCOMPLETE CLIENT ----
+function acNClient(input){
+  const q=input.value.trim().toLowerCase();
+  const list=document.getElementById('ac-n-client');
+  if(!q){list.style.display='none';return;}
+  const m=(window._histoClients||[]).filter(c=>c.toLowerCase().includes(q)).slice(0,8);
+  if(!m.length){list.style.display='none';return;}
+  list.innerHTML=m.map(c=>`<div style="padding:9px 14px;cursor:pointer;font-size:13px;border-bottom:.5px solid var(--gray-light)" onmousedown="event.preventDefault();document.getElementById('n-client').value='${c.replace(/'/g,"\\'")}';document.getElementById('ac-n-client').style.display='none'">${c}</div>`).join('');
+  list.style.display='block';
+}
+document.addEventListener('click',e=>{
+  const list=document.getElementById('ac-n-client');
+  if(list&&!list.contains(e.target)) list.style.display='none';
+});
+
+// ---- CALCUL COÛT TOTAL ----
+function calcTotal(){
+  const ids=['c-achat','c-vente','c-transport','c-depannage','c-conditionnement','c-avoir'];
+  const total=ids.reduce((s,id)=>s+(parseFloat(document.getElementById(id)?.value)||0),0);
+  document.getElementById('cout-total').textContent=total.toFixed(2).replace('.',',')+' €';
+  return total;
+}
+
+// ---- LIEN RETOUR ----
+function ouvrirLienRetour(){
+  document.getElementById('search-retour').value='';
+  filtrerRetourModal();
+  document.getElementById('modal-retour').classList.add('open');
+}
+function fermerModalRetour(){ document.getElementById('modal-retour').classList.remove('open'); }
+function filtrerRetourModal(){
+  const q=document.getElementById('search-retour').value.trim().toLowerCase();
+  const list=document.getElementById('retours-modal-list');
+  const retours=(window.retoursMoorea||[]).filter(r=>
+    !q||r.client?.toLowerCase().includes(q)||String(r.bl||'').includes(q)||(r.numero||'').toLowerCase().includes(q)
+  ).slice(0,30);
+  if(!retours.length){list.innerHTML=`<div style="text-align:center;padding:2rem;color:#bbb;font-size:13px">Aucune fiche trouvée</div>`;return;}
+  list.innerHTML=retours.map(r=>`
+    <div class="retour-option" onclick="lierRetour('${r.firebaseId}','${r.numero||''}','${(r.client||'').replace(/'/g,"\\'")}','${r.bl||''}')">
+      <div>
+        <span style="font-size:11px;font-weight:700;color:var(--gold);background:rgba(200,168,75,.12);border:1px solid var(--gold-border);border-radius:5px;padding:1px 7px">${r.numero||'—'}</span>
+        <span style="font-weight:600;margin-left:8px">${r.client||'—'}</span>
+        <span style="color:var(--gray);font-size:12px;margin-left:6px">BL ${r.bl||'—'}</span>
+      </div>
+      <span style="font-size:11px;color:var(--gray)">${r.date||''}</span>
+    </div>`).join('');
+}
+function lierRetour(fid,num,client,bl){
+  window._retourLie={fid,num,client,bl};
+  const disp=document.getElementById('retour-lie-display');
+  document.getElementById('retour-lie-label').textContent=`🔗 Lié à ${num} — ${client} (BL ${bl})`;
+  disp.style.display='flex';
+  fermerModalRetour();
+}
+function delierRetour(){
+  window._retourLie=null;
+  document.getElementById('retour-lie-display').style.display='none';
+}
+
+// ---- RESET FORM ----
+function resetForm(){
+  ['n-date','n-client','n-bl','n-transport','n-produit','n-qte','n-fournisseur','n-lot','n-origine','n-details','n-preparateur','n-controle','n-commentaire'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['n-type','n-retour-moorea','n-remise-stock'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['c-achat','c-vente','c-transport','c-depannage','c-conditionnement','c-avoir'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('cout-total').textContent='0,00 €';
+  window._retourLie=null;
+  document.getElementById('retour-lie-display').style.display='none';
+  document.getElementById('n-date').value=new Date().toISOString().split('T')[0];
+}
+
+// ---- SAUVEGARDER ----
+async function sauvegarderLitige(){
+  const client=document.getElementById('n-client').value.trim();
+  const produit=document.getElementById('n-produit').value.trim();
+  if(!client||!produit){ showToast('Client et produit requis.'); return; }
+
+  const couts={
+    achat:parseFloat(document.getElementById('c-achat').value)||0,
+    vente:parseFloat(document.getElementById('c-vente').value)||0,
+    transport:parseFloat(document.getElementById('c-transport').value)||0,
+    depannage:parseFloat(document.getElementById('c-depannage').value)||0,
+    conditionnement:parseFloat(document.getElementById('c-conditionnement').value)||0,
+    avoir:parseFloat(document.getElementById('c-avoir').value)||0,
+  };
+  const total=Object.values(couts).reduce((s,v)=>s+v,0);
+
+  const litige={
+    ts:Date.now(),
+    date:document.getElementById('n-date').value,
+    client,
+    bl:document.getElementById('n-bl').value.trim(),
+    transport:document.getElementById('n-transport').value.trim(),
+    produit,
+    qte:document.getElementById('n-qte').value.trim(),
+    fournisseur:document.getElementById('n-fournisseur').value.trim(),
+    lot:document.getElementById('n-lot').value.trim(),
+    origine:document.getElementById('n-origine').value.trim(),
+    type:document.getElementById('n-type').value,
+    details:document.getElementById('n-details').value.trim(),
+    preparateur:document.getElementById('n-preparateur').value.trim(),
+    controle:document.getElementById('n-controle').value.trim(),
+    retourMoorea:document.getElementById('n-retour-moorea').value,
+    remiseStock:document.getElementById('n-remise-stock').value,
+    commentaire:document.getElementById('n-commentaire').value.trim(),
+    couts, coutTotal:total,
+    retourLie:window._retourLie||null,
+    statut:'ouvert'
+  };
+
+  const btn=document.getElementById('btn-save-litige');
+  btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Enregistrement...';
+
+  try{
+    if(window._editId){
+      await window._update(window._ref(window._db,'litiges/'+window._editId), litige);
+      showToast('Litige modifié !');
+    } else {
+      await window._push(window._ref(window._db,'litiges'), litige);
+      showToast('Litige enregistré !');
+    }
+    window._editId=null;
+    resetForm();
+    showPage('litiges');
+  }catch(e){ showToast('Erreur : '+e.message); }
+  btn.disabled=false; btn.innerHTML='<i class="ti ti-device-floppy"></i> Enregistrer le litige';
+}
+
+// ---- RENDER LITIGES ----
+// ---- FILTRES AVANCÉS ----
+function toggleFiltresAvances(){
+  const panel=document.getElementById('filtres-avances');
+  const isOpen=panel.style.display!=='none';
+  panel.style.display=isOpen?'none':'block';
+  const btn=document.getElementById('btn-filtres-avances');
+  btn.style.background=isOpen?'var(--white)':'#fffbf0';
+  btn.style.borderColor=isOpen?'var(--gray-light)':'rgba(200,168,75,.5)';
+  btn.style.color=isOpen?'var(--gray)':'var(--gold)';
+}
+
+function selectionnerMois(mois){
+  if(!mois){ document.getElementById('f-date-debut').value=''; document.getElementById('f-date-fin').value=''; }
+  else {
+    const [yr,mo]=mois.split('-');
+    const last=new Date(yr,mo,0).getDate();
+    document.getElementById('f-date-debut').value=mois+'-01';
+    document.getElementById('f-date-fin').value=mois+'-'+String(last).padStart(2,'0');
+  }
+  renderLitiges();
+}
+
+function acFiltre(inputId, listId, field){
+  const q=document.getElementById(inputId).value.trim().toLowerCase();
+  const list=document.getElementById(listId);
+  const vals=[...new Set((window.litiges||[]).map(l=>l[field]).filter(Boolean))].filter(v=>!q||v.toLowerCase().includes(q)).sort().slice(0,10);
+  if(!vals.length){list.style.display='none';return;}
+  list.innerHTML=vals.map(v=>`<div class="ac-filtre-item" onmousedown="event.preventDefault();document.getElementById('${inputId}').value='${v.replace(/'/g,"\'")}';document.getElementById('${listId}').style.display='none';renderLitiges()">${v}</div>`).join('');
+  list.style.display='block';
+}
+
+function resetFiltres(){
+  ['f-statut','f-type','f-preparateur','f-transport','f-date-debut','f-date-fin','f-mois','f-cout-min','search-input'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('filtres-avances').style.display='none';
+  document.getElementById('btn-reset-filtres').style.display='none';
+  document.getElementById('filtres-count-badge').style.display='none';
+  const btn=document.getElementById('btn-filtres-avances');
+  btn.style.background='var(--white)'; btn.style.borderColor='var(--gray-light)'; btn.style.color='var(--gray)';
+  renderLitiges();
+}
+
+document.addEventListener('click',e=>{
+  ['ac-f-prep','ac-f-trans'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.contains(e.target))el.style.display='none';});
+});
+
+function renderLitiges(){
+  const container=document.getElementById('litiges-list');
+  const q=(document.getElementById('search-input')?.value||'').trim().toLowerCase();
+  const fStatut=document.getElementById('f-statut')?.value||'';
+  const fType=document.getElementById('f-type')?.value||'';
+  const fPrep=(document.getElementById('f-preparateur')?.value||'').trim().toLowerCase();
+  const fTrans=(document.getElementById('f-transport')?.value||'').trim().toLowerCase();
+  const fDateDebut=document.getElementById('f-date-debut')?.value||'';
+  const fDateFin=document.getElementById('f-date-fin')?.value||'';
+  const fCoutMin=parseFloat(document.getElementById('f-cout-min')?.value)||0;
+
+  let list=window.litiges||[];
+  if(q) list=list.filter(l=>(l.client||'').toLowerCase().includes(q)||(l.produit||'').toLowerCase().includes(q)||String(l.bl||'').includes(q)||(l.type||'').toLowerCase().includes(q)||(l.preparateur||'').toLowerCase().includes(q)||(l.fournisseur||'').toLowerCase().includes(q));
+  if(fStatut) list=list.filter(l=>l.statut===fStatut);
+  if(fType) list=list.filter(l=>(l.type||'').toUpperCase()===fType.toUpperCase());
+  if(fPrep) list=list.filter(l=>(l.preparateur||'').toLowerCase().includes(fPrep));
+  if(fTrans) list=list.filter(l=>(l.transport||'').toLowerCase().includes(fTrans));
+  if(fDateDebut) list=list.filter(l=>l.date&&l.date>=fDateDebut);
+  if(fDateFin) list=list.filter(l=>l.date&&l.date<=fDateFin);
+  if(fCoutMin>0) list=list.filter(l=>(l.coutTotal||0)>=fCoutMin);
+
+  // Update badge count
+  const nbFiltres=[fStatut,fType,fPrep,fTrans,fDateDebut,fDateFin,fCoutMin>0?'1':''].filter(Boolean).length;
+  const badge=document.getElementById('filtres-count-badge');
+  if(badge){badge.textContent=nbFiltres;badge.style.display=nbFiltres>0?'inline':'none';}
+  const btnReset=document.getElementById('btn-reset-filtres');
+  if(btnReset) btnReset.style.display=(nbFiltres>0||q)?'block':'none';
+
+  // Update résumé
+  const resume=document.getElementById('resultats-resume');
+  const resumeTxt=document.getElementById('resultats-texte');
+  const resumeCout=document.getElementById('resultats-cout');
+  if(resume){
+    if(list.length<(window.litiges||[]).length){
+      const total=list.reduce((s,l)=>s+(l.coutTotal||0),0);
+      resumeTxt.textContent=list.length+' litige'+(list.length>1?'s':'')+' trouvé'+(list.length>1?'s':'');
+      resumeCout.textContent=total>0?'Coût : '+total.toFixed(2).replace('.',',')+'  €':'';
+      resume.style.display='flex';
+    } else {
+      resume.style.display='none';
+    }
+  }
+
+  if(!list.length){
+    container.innerHTML=`<div class="empty-state"><i class="ti ti-inbox"></i><br>Aucun litige trouvé</div>`;
+    return;
+  }
+
+  container.innerHTML=list.map(l=>{
+    const statutBadge={'ouvert':'badge-ouvert','en_cours':'badge-encours','clos':'badge-clos'}[l.statut]||'badge-ouvert';
+    const statutLabel={'ouvert':'Ouvert','en_cours':'En cours','clos':'Clôturé'}[l.statut]||'Ouvert';
+    const typeBg={'QUALITE':'#fef3c7','MANQUANT':'#dbeafe','ERREUR PREPARATION':'#f3e8ff','COLIS ABIME':'#fee2e2','MAUVAIS ARTICLE':'#f3f4f6'}[l.type]||'#f5f3ee';
+    const typeColor={'QUALITE':'#b45309','MANQUANT':'#1d4ed8','ERREUR PREPARATION':'#7c3aed','COLIS ABIME':'#dc2626','MAUVAIS ARTICLE':'#6b7280'}[l.type]||'#6b7280';
+    return `<div class="litige-card ${l.retourLie?'has-retour':''}" onclick="ouvrirDetail('${l.firebaseId}')">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-weight:700;font-size:14px">${l.client||'—'}</span>
+          ${l.bl?`<span style="color:var(--gray);font-size:12px">BL ${l.bl}</span>`:''}
+          ${l.retourLie?`<span class="badge badge-lie"><i class="ti ti-link"></i> ${l.retourLie.num}</span>`:''}
+          <span class="badge ${statutBadge}">${statutLabel}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${l.coutTotal>0?`<span style="font-weight:700;color:#dc2626;font-size:14px">${l.coutTotal.toFixed(2).replace('.',',')} €</span>`:''}
+        </div>
+      </div>
+      <div class="litige-meta">
+        <span><i class="ti ti-calendar"></i> ${l.date||'—'}</span>
+        <span><i class="ti ti-box"></i> ${l.produit||'—'}${l.qte?' · '+l.qte:''}</span>
+        ${l.fournisseur?`<span><i class="ti ti-building"></i> ${l.fournisseur}</span>`:''}
+        ${l.transport?`<span><i class="ti ti-truck"></i> ${l.transport}</span>`:''}
+        ${l.type?`<span style="background:${typeBg};color:${typeColor};padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${l.type}</span>`:''}
+      </div>
+      ${l.details?`<div style="font-size:12px;color:var(--gray);margin-top:6px;font-style:italic">${l.details}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ---- DETAIL ----
+function ouvrirDetail(fid){
+  const l=window.litiges.find(x=>x.firebaseId===fid); if(!l) return;
+  window._detailId=fid;
+  const couts=l.couts||{};
+  const statutLabel={'ouvert':'Ouvert','en_cours':'En cours','clos':'Clôturé'}[l.statut]||'Ouvert';
+  const statutBadge={'ouvert':'badge-ouvert','en_cours':'badge-encours','clos':'badge-clos'}[l.statut]||'badge-ouvert';
+
+  document.getElementById('modal-detail-content').innerHTML=`
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem">
+      <span class="badge ${statutBadge}">${statutLabel}</span>
+      ${l.retourLie?`<span class="badge badge-lie"><i class="ti ti-link"></i> Lié à ${l.retourLie.num}</span>`:''}
+      ${l.type?`<span class="badge" style="background:#fef3c7;color:#b45309;border:1px solid #fde68a">${l.type}</span>`:''}
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
+      ${[['Client',l.client],['N° BL',l.bl],['Date',l.date],['Transporteur',l.transport],['Produit',l.produit],['Quantité',l.qte],['Fournisseur',l.fournisseur],['N° Lot',l.lot],['Origine',l.origine],['Préparateur',l.preparateur],['Contrôle',l.controle],['Retour Moorea',l.retourMoorea],['Remise stock',l.remiseStock]].filter(([,v])=>v).map(([k,v])=>`
+        <div style="background:var(--cream);border-radius:8px;padding:8px 12px">
+          <div style="font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">${k}</div>
+          <div style="font-weight:600;font-size:13px">${v}</div>
+        </div>`).join('')}
+    </div>
+
+    ${l.details?`<div style="background:#fef3c7;border-radius:8px;padding:10px 14px;margin-bottom:1rem;font-size:13px"><strong>Détails :</strong> ${l.details}</div>`:''}
+    ${l.commentaire?`<div style="background:var(--cream);border-radius:8px;padding:10px 14px;margin-bottom:1rem;font-size:13px"><i class="ti ti-message"></i> ${l.commentaire}</div>`:''}
+
+    ${l.coutTotal>0?`<div style="background:#fff5f5;border:1.5px solid #fecaca;border-radius:10px;padding:14px 16px">
+      <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Coûts du litige</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+        ${[['Perte achat',couts.achat],['Perte vente',couts.vente],['Transport',couts.transport],['Dépannage',couts.depannage],['Conditionnement',couts.conditionnement],['Avoir fourn.',couts.avoir]].filter(([,v])=>v>0).map(([k,v])=>`<div><span style="font-size:11px;color:var(--gray)">${k}</span><br><strong>${v.toFixed(2).replace('.',',')} €</strong></div>`).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #fecaca;padding-top:10px">
+        <span style="font-weight:600;color:var(--gray)">TOTAL</span>
+        <span style="font-size:20px;font-weight:700;color:#dc2626">${l.coutTotal.toFixed(2).replace('.',',')} €</span>
+      </div>
+    </div>`:''}
+  `;
+
+  document.getElementById('modal-detail').classList.add('open');
+}
+function fermerDetail(){ document.getElementById('modal-detail').classList.remove('open'); }
+
+async function changerStatut(){
+  const l=window.litiges.find(x=>x.firebaseId===window._detailId); if(!l) return;
+  const next={'ouvert':'en_cours','en_cours':'clos','clos':'ouvert'}[l.statut]||'ouvert';
+  try{
+    await window._update(window._ref(window._db,'litiges/'+l.firebaseId),{statut:next});
+    showToast('Statut mis à jour !');
+    fermerDetail();
+  }catch(e){showToast('Erreur : '+e.message);}
+}
+
+function modifierLitige(){
+  const l=window.litiges.find(x=>x.firebaseId===window._detailId); if(!l) return;
+  fermerDetail();
+  window._editId=l.firebaseId;
+  // Remplir le formulaire
+  document.getElementById('n-date').value=l.date||'';
+  document.getElementById('n-client').value=l.client||'';
+  document.getElementById('n-bl').value=l.bl||'';
+  document.getElementById('n-transport').value=l.transport||'';
+  document.getElementById('n-produit').value=l.produit||'';
+  document.getElementById('n-qte').value=l.qte||'';
+  document.getElementById('n-fournisseur').value=l.fournisseur||'';
+  document.getElementById('n-lot').value=l.lot||'';
+  document.getElementById('n-origine').value=l.origine||'';
+  document.getElementById('n-type').value=l.type||'';
+  document.getElementById('n-details').value=l.details||'';
+  document.getElementById('n-preparateur').value=l.preparateur||'';
+  document.getElementById('n-controle').value=l.controle||'';
+  document.getElementById('n-commentaire').value=l.commentaire||'';
+  document.getElementById('n-retour-moorea').value=l.retourMoorea||'';
+  document.getElementById('n-remise-stock').value=l.remiseStock||'';
+  const c=l.couts||{};
+  ['achat','vente','transport','depannage','conditionnement','avoir'].forEach(k=>{
+    const el=document.getElementById('c-'+k); if(el) el.value=c[k]||'';
+  });
+  calcTotal();
+  if(l.retourLie){ window._retourLie=l.retourLie; lierRetour(l.retourLie.fid,l.retourLie.num,l.retourLie.client,l.retourLie.bl); }
+  showPage('nouveau');
+  document.getElementById('btn-save-litige').innerHTML='<i class="ti ti-device-floppy"></i> Enregistrer les modifications';
+}
+
+// ---- STATS ----
+function renderStats(){
+  const l=window.litiges;
+  const total=l.length;
+  const ouverts=l.filter(x=>x.statut==='ouvert').length;
+  const enCours=l.filter(x=>x.statut==='en_cours').length;
+  const clos=l.filter(x=>x.statut==='clos').length;
+  const coutTotal=l.reduce((s,x)=>s+(x.coutTotal||0),0);
+
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat-card"><div class="num">${total}</div><div class="lbl">Total litiges</div></div>
+    <div class="stat-card warn"><div class="num">${ouverts}</div><div class="lbl">Ouverts</div></div>
+    <div class="stat-card" style="border-color:#bfdbfe;background:#eff6ff"><div class="num" style="color:#1d4ed8">${enCours}</div><div class="lbl">En cours</div></div>
+    <div class="stat-card" style="border-color:#bbf7d0;background:#f0fdf4"><div class="num" style="color:#15803d">${clos}</div><div class="lbl">Clôturés</div></div>
+    <div class="stat-card red"><div class="num">${coutTotal.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.')} €</div><div class="lbl">Coût total</div></div>`;
+
+  // Top types
+  const byType={};
+  l.forEach(x=>{ if(x.type) byType[x.type]=(byType[x.type]||0)+1; });
+  const topTypes=Object.entries(byType).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  // Top clients par coût
+  const byClient={};
+  l.forEach(x=>{ if(x.client) byClient[x.client]=(byClient[x.client]||0)+(x.coutTotal||0); });
+  const topClients=Object.entries(byClient).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+  document.getElementById('stats-charts').innerHTML=`
+    <div class="card">
+      <div class="section-header">Types de non-conformité</div>
+      ${topTypes.map(([t,n])=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-size:12px;min-width:160px;font-weight:500">${t}</span>
+        <div style="flex:1;background:var(--cream);border-radius:20px;height:10px;overflow:hidden">
+          <div style="height:10px;background:var(--gold);border-radius:20px;width:${Math.round(n/total*100)}%"></div>
+        </div>
+        <span style="font-size:12px;font-weight:700;min-width:30px;text-align:right">${n}</span>
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="section-header">Coûts par type</div>
+      ${Object.entries(byType).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([t])=>{
+        const cout=l.filter(x=>x.type===t).reduce((s,x)=>s+(x.coutTotal||0),0);
+        return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:12px;min-width:160px;font-weight:500">${t}</span>
+          <div style="flex:1;background:var(--cream);border-radius:20px;height:10px;overflow:hidden">
+            <div style="height:10px;background:#dc2626;border-radius:20px;width:${coutTotal>0?Math.round(cout/coutTotal*100):0}%"></div>
+          </div>
+          <span style="font-size:12px;font-weight:700;min-width:60px;text-align:right;color:#dc2626">${cout.toFixed(0)} €</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  document.getElementById('stats-clients').innerHTML=`
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="border-bottom:1.5px solid var(--gray-light)">
+        <th style="padding:8px;text-align:left;color:var(--gray);font-size:10px;text-transform:uppercase">Client</th>
+        <th style="padding:8px;text-align:center;color:var(--gray);font-size:10px;text-transform:uppercase">Nb litiges</th>
+        <th style="padding:8px;text-align:right;color:var(--gray);font-size:10px;text-transform:uppercase">Coût total</th>
+      </tr></thead>
+      <tbody>${topClients.map(([c,cout])=>{
+        const nb=l.filter(x=>x.client===c).length;
+        return `<tr style="border-bottom:1px solid #f5f3ee">
+          <td style="padding:8px;font-weight:600">${c}</td>
+          <td style="padding:8px;text-align:center">${nb}</td>
+          <td style="padding:8px;text-align:right;font-weight:700;color:#dc2626">${cout.toFixed(2).replace('.',',')} €</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+
+  // Coûts par mois
+  const byMois={};
+  l.forEach(x=>{
+    if(x.date){
+      const m=x.date.substring(0,7);
+      byMois[m]=(byMois[m]||{n:0,cout:0});
+      byMois[m].n++;
+      byMois[m].cout+=(x.coutTotal||0);
+    }
+  });
+  const moisSorted=Object.entries(byMois).sort((a,b)=>a[0].localeCompare(b[0]));
+  document.getElementById('stats-mois').innerHTML=`
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="border-bottom:1.5px solid var(--gray-light)">
+        <th style="padding:8px;text-align:left;color:var(--gray);font-size:10px;text-transform:uppercase">Mois</th>
+        <th style="padding:8px;text-align:center;color:var(--gray);font-size:10px;text-transform:uppercase">Nb litiges</th>
+        <th style="padding:8px;text-align:right;color:var(--gray);font-size:10px;text-transform:uppercase">Coût total</th>
+      </tr></thead>
+      <tbody>${moisSorted.map(([m,v])=>{
+        const [yr,mo]=m.split('-');
+        const nom=new Date(yr,mo-1).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+        return `<tr style="border-bottom:1px solid #f5f3ee">
+          <td style="padding:8px;font-weight:500;text-transform:capitalize">${nom}</td>
+          <td style="padding:8px;text-align:center">${v.n}</td>
+          <td style="padding:8px;text-align:right;font-weight:700;color:#dc2626">${v.cout.toFixed(2).replace('.',',')} €</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// Init
+document.getElementById('n-date').value=new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
